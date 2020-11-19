@@ -1,0 +1,11 @@
+def get_corelated_col(cor_dat, threshold):
+
+  feature=[]
+  value=[]
+  for i ,index in enumerate(cor_dat.index):
+    if abs(cor_dat[index]) > threshold:
+      feature.append(index)
+      value.append(cor_dat[index])
+
+  df = pd.DataFrame(data = value, index = feature, columns=['corr_value'])
+  return df
