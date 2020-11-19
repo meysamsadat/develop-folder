@@ -1,0 +1,3 @@
+#how to find the quantity of unique values
+unique_counts = pd.DataFrame.from_records([(col, df[col].nunique()) for col in df.columns], columns=['Column_Name', 'Num_Unique']).sort_values(by=['Num_Unique'])
+unique_counts.plot(kind='bar')
