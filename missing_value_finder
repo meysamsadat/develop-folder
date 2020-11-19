@@ -1,0 +1,5 @@
+def missing_statistics(df):
+    missing_stats = df.isnull().sum().to_frame()
+    missing_stats.columns = ['num_missing']
+    missing_stats['pct_missing'] = np.round(100 * (missing_stats['num_missing'] / df.shape[0]))
+    missing_stats.sort_values(by='num_missing', ascending=False, inplace=True)
