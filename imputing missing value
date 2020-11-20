@@ -1,0 +1,28 @@
+
+Takes a list of columns and a dataframe and imputes based on
+the column type. If it is object type, then most_frequent value
+is used for imputation. If it is a float/int type, then the median value is used for imputation.
+arguments:
+cols: list of columns
+df : dataframe containing these columns.
+returns:
+df: the imputed dataframe
+
+
+
+
+from sklearn.impute import SimpleImputer
+def replace_missing_values(cols, df):
+    for col in cols:
+        if df[col].dtypes == 'object':
+            print("Imputing {} column with most frequent value".format(col))
+            mode_imputer = SimpleImputer(strategy='most_frequent')
+            df.loc[:, col] = mode_imputer.fit_transform(df[[col]])
+        elif df[col].dtype == 'float64' or df[col].dtype == 'int64':
+            print("Imputing {} column with median value".format(col))
+            median_imputer = SimpleImputer(strategy='median')
+            df.loc[:, col] = median_imputer.fit_transform(df[[col]])
+        else:
+            raise ValueError("Invalid column type")
+
+    return df
