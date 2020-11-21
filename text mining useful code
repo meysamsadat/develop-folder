@@ -1,0 +1,12 @@
+# create a dictionary of terms
+
+verification_idx = {}
+idx = 0
+corpus = []
+for i in range(len(verifications)):
+    items = verifications[i]
+    corpus.append(items)
+    for item in items:
+        if item not in verification_idx:
+            verification_idx[item] = idx
+            idx += 1
