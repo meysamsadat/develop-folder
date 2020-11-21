@@ -1,0 +1,70 @@
+import re
+import pandas as pd
+import numpy as np
+import nltk
+import string
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import wordnet as wn
+
+# define some common lingo
+custom_stopwords = ['bedroom', 'bathroom', 'apartment']
+
+def remove_hypens(book_text):
+    return re.sub(r'(\w+)-(\w+)-?(\w)?', r'\1 \2 \3', book_text)
+
+# tokenize text
+def tokenize_text(book_text):
+    TOKEN_PATTERN = r'\s+'
+    regex_wt = nltk.RegexpTokenizer(pattern=TOKEN_PATTERN, gaps=True)
+    word_tokens = regex_wt.tokenize(book_text)
+    return word_tokens
+
+def remove_characters_after_tokenization(tokens):
+    pattern = re.compile('[{}]'.format(re.escape(string.punctuation)))
+    filtered_tokens = filter(None, [pattern.sub('', token) for token in tokens])
+    return filtered_tokens
+
+def convert_to_lowercase(tokens):
+    return [token.lower() for token in tokens if token.isalpha()]
+
+def remove_stopwords(tokens, custom_stopwords):
+    stopword_list = nltk.corpus.stopwords.words('english')
+    stopword_list += custom_stopwords
+    filtered_tokens = [token for token in tokens if token not in stopword_list]
+    return filtered_tokens
+
+def get_lemma(tokens):
+    lemmas = []
+    for word in tokens:
+        lemma = wn.morphy(word)
+        if lemma is None:
+            lemmas.append(word)
+        else:
+            lemmas.append(lemma)
+    return lemmas
+
+def remove_short_tokens(tokens):
+    return [token for token in tokens if len(token) > 3]
+
+def keep_only_words_in_wordnet(tokens):
+    return [token for token in tokens if wn.synsets(token)]
+
+def apply_lemmatize(tokens, wnl=WordNetLemmatizer()):
+    return [wnl.lemmatize(token) for token in tokens]
+
+# I like to think of each row of text as a book
+# input to this function is a list of books
+def nlp_pipeline(book_texts):
+    clean_books = []
+    for book in book_texts:
+        book = remove_hypens(book)
+        book_i = tokenize_text(book)
+        book_i = remove_characters_after_tokenization(book_i)
+        book_i = convert_to_lowercase(book_i)
+        book_i = remove_stopwords(book_i, custom_stopwords)
+        book_i = get_lemma(book_i)
+        book_i = remove_short_tokens(book_i)
+        book_i = keep_only_words_in_wordnet(book_i)
+        book_i = apply_lemmatize(book_i)
+        clean_books.append(book_i)
+    return clean_books
